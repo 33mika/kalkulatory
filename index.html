@@ -1,709 +1,780 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Kalkulatory Medyczne</title>
-  <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif; color: white; }
-    body { padding: max(16px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)) 16px; display: flex; justify-content: center; align-items: flex-start; }
-    body.t-menu { background: radial-gradient(circle at top left, rgba(255,255,255,0.18), transparent 30%), linear-gradient(180deg, #1a0a3e 0%, #3d1478 48%, #8b5cf6 100%); }
-    body.t-bmi { background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 30%), linear-gradient(180deg, #9a6a00 0%, #f0b400 48%, #ffe58a 100%); }
-    body.t-ligno { background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 30%), linear-gradient(180deg, #7c0f1d 0%, #cf2f49 48%, #ffb3bf 100%); }
-    body.t-gfr { background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 30%), linear-gradient(180deg, #0d5c3b 0%, #1e9f67 48%, #a8f0c8 100%); }
-    body.t-dexdor { background: radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 30%), linear-gradient(180deg, #0d3e97 0%, #1093e0 48%, #8ee1ff 100%); }
-    body.t-natremia { background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 30%), linear-gradient(180deg, #3d0a6e 0%, #8b2fc9 48%, #dba8f5 100%); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fffaeb">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow">
+<title>Kalkulatory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --t900:#181d27;
+  --t700:#414651;
+  --t600:#535862;
+  --t500:#717680;
+  --line:#e9eaeb;
+  --line2:#d5d7da;
+  --track:#dfe1e5;
+  --bg2:#fafafa;
+  --bg3:#f5f5f5;
+  --g50:#eff8f5;
+  --g300:#9fd4c6;
+  --g600:#117a66;
+  --g650:#0f715e;
+  --g700:#0d6a58;
+  --w50:#fffaeb;
+  --w200:#fedf89;
+  --w600:#dc6803;
+  --w700:#b54708;
+  --w800:#93370d;
+  --e600:#d92d20;
+  --r:8px;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --menu:"Rubik",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --ink:#2c2e3b;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{overflow-x:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:#fff;color:var(--t700);font:16px/1.45 var(--sans)}
+button,input{font:inherit;color:inherit;touch-action:manipulation}
+button{margin:0;cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+:focus-visible{outline:2px solid var(--g600);outline-offset:2px}
 
-    .page { display: none; width: 100%; }
-    .page.active { display: flex; flex-direction: column; align-items: center; }
+.in{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
-    .t-bmi { --shadow: 0 18px 50px rgba(90,58,0,0.26); --hero-top: linear-gradient(180deg, rgba(116,80,0,0.92), rgba(232,170,0,0.75)); --dot-g: linear-gradient(180deg,#fff3a5,#ffcf33); --dot-glow: 0 0 14px rgba(255,240,160,0.85); --res-bg: rgba(255,248,220,0.95); --res-shadow: rgba(120,83,0,0.18); --res-num: #f0a500; --unit-bg: #5f4a17; --step-to: rgba(255,244,210,0.95); --step-sh: rgba(90,58,0,0.2); --accent-dark: #c88700; --range-sh: rgba(90,58,0,0.3); --det-sh: rgba(120,83,0,0.14); --det-box: #fff7df; --det-k: #8d6a00; --det-v: #6b4d00; --ind-sh: rgba(90,58,0,0.26); }
-    .t-ligno { --shadow: 0 18px 50px rgba(85,9,23,0.28); --hero-top: linear-gradient(180deg, rgba(103,10,26,0.92), rgba(197,39,66,0.78)); --dot-g: linear-gradient(180deg,#ffd7de,#ff6b83); --dot-glow: 0 0 14px rgba(255,187,199,0.85); --res-bg: rgba(255,240,243,0.95); --res-shadow: rgba(102,15,34,0.18); --res-num: #ef3654; --unit-bg: #5a3340; --step-to: rgba(255,235,239,0.95); --step-sh: rgba(85,9,23,0.2); --accent-dark: #a91f37; --range-sh: rgba(85,9,23,0.3); --det-sh: rgba(85,9,23,0.14); --det-box: #fff0f3; --det-k: #8f4152; --det-v: #5d1020; --ind-sh: rgba(85,9,23,0.26); }
-    .t-gfr { --shadow: 0 18px 50px rgba(8,67,42,0.26); --hero-top: linear-gradient(180deg, rgba(10,75,47,0.92), rgba(26,146,92,0.78)); --dot-g: linear-gradient(180deg,#d7ffe8,#63f3a7); --dot-glow: 0 0 14px rgba(170,255,205,0.8); --res-bg: rgba(235,255,244,0.95); --res-shadow: rgba(13,85,53,0.18); --res-num: #16a765; --unit-bg: #355c49; --step-to: rgba(228,255,239,0.95); --step-sh: rgba(8,67,42,0.2); --accent-dark: #0f7f4c; --range-sh: rgba(8,67,42,0.3); --det-sh: rgba(8,67,42,0.14); --det-box: #effff5; --det-k: #4e7b64; --det-v: #0f4a33; --ind-sh: rgba(8,67,42,0.26); }
-    .t-dexdor { --shadow: 0 18px 50px rgba(6,26,68,0.28); --hero-top: linear-gradient(180deg, rgba(18,40,112,0.9), rgba(22,115,216,0.72)); --dot-g: linear-gradient(180deg,#f05fd6,#7647ff); --dot-glow: 0 0 14px rgba(236,96,212,0.7); --res-bg: rgba(236,246,255,0.92); --res-shadow: rgba(12,60,124,0.2); --res-num: #1890ff; --unit-bg: #3a475c; --step-to: rgba(215,231,255,0.92); --step-sh: rgba(12,43,92,0.22); --accent-dark: #0c63d4; --range-sh: rgba(8,35,91,0.35); --det-sh: rgba(12,60,124,0.18); --det-box: #eef6ff; --det-k: #5f7194; --det-v: #18396e; --ind-sh: rgba(8,35,91,0.25); }
-    .t-natremia { --shadow: 0 18px 50px rgba(45,5,80,0.28); --hero-top: linear-gradient(180deg, rgba(50,8,90,0.92), rgba(130,40,200,0.78)); --dot-g: linear-gradient(180deg,#f0d7ff,#c86bff); --dot-glow: 0 0 14px rgba(220,170,255,0.85); --res-bg: rgba(248,240,255,0.95); --res-shadow: rgba(80,20,120,0.18); --res-num: #9b2fd4; --unit-bg: #5a3a6e; --step-to: rgba(245,228,255,0.95); --step-sh: rgba(60,10,100,0.2); --accent-dark: #7020a8; --range-sh: rgba(60,10,100,0.3); --det-sh: rgba(60,10,100,0.14); --det-box: #f8f0ff; --det-k: #7a4a8f; --det-v: #3d0a6e; --ind-sh: rgba(60,10,100,0.26); }
+.alert{padding-top:env(safe-area-inset-top,0px);background:var(--w50);border-bottom:1px solid var(--w200);color:var(--w800)}
+.alert .in{padding-top:10px;padding-bottom:10px}
+.alert b{display:block;font-size:14px;font-weight:700}
+.alert span{display:block;margin-top:1px;font-size:13px}
 
-    .app { width: 100%; max-width: 520px; }
-    .hero { background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)); border: 1px solid rgba(255,255,255,0.28); box-shadow: var(--shadow); border-radius: 32px; overflow: hidden; backdrop-filter: blur(18px); }
-    .hero-top { padding: 22px 22px 18px; background: var(--hero-top); border-bottom: 1px solid rgba(255,255,255,0.16); }
-    .brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .brand-badge { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.16); font-weight: 700; letter-spacing: 0.2px; font-size: 0.83rem; }
-    .brand-badge .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--dot-g); box-shadow: var(--dot-glow); flex-shrink: 0; }
-    .hero-top h1 { margin: 14px 0 6px; font-size: 1.9rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; }
-    .hero-top p { margin: 0; color: rgba(255,255,255,0.9); font-size: 0.97rem; }
-    .back-btn { text-decoration: none; color: white; font-weight: 700; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.16); cursor: pointer; font-size: 0.88rem; }
+.top{background:#fff;border-bottom:2px solid var(--g600)}
+.top .in{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px}
+.brand{color:var(--t900);font-size:18px;font-weight:600;letter-spacing:-.01em}
+.brand small{margin-left:8px;color:var(--t500);font-size:11px;font-weight:600;letter-spacing:.1em}
+.btn{min-height:38px;padding:6px 16px;background:#fff;border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 1px 2px rgba(10,13,18,.05);color:var(--t700);font-size:14px;font-weight:600}
+.btn:active{background:var(--bg3)}
 
-    .result-card { margin: 18px 22px 0; background: linear-gradient(180deg, rgba(255,255,255,0.97), var(--res-bg)); border-radius: 28px; padding: 18px 20px 20px; color: var(--det-v); box-shadow: 0 12px 28px var(--res-shadow); }
-    .result-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-    .result-top .label { font-size: 0.9rem; color: var(--det-k); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-    .result-top .sublabel { font-size: 0.9rem; color: var(--det-k); font-weight: 700; }
-    .result-value { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-    .result-number { font-size: clamp(3rem, 12vw, 4.8rem); line-height: 0.95; font-weight: 800; color: var(--res-num); letter-spacing: -0.05em; }
-    .result-unit { padding: 7px 12px; border-radius: 999px; background: var(--unit-bg); color: white; font-weight: 700; font-size: 0.95rem; }
+main{padding-bottom:16px}
+.page{animation:wejscie .22s ease-out}
+@keyframes wejscie{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.page-head{margin:24px 0 18px}
+.page-head h1{margin:0;color:var(--t900);font-size:clamp(24px,5.4vw,32px);font-weight:600;line-height:1.15;letter-spacing:-.02em}
+.page-head p{margin:6px 0 0;color:var(--t600);font-size:15px}
 
-    .hero-body { padding: 22px; display: grid; gap: 18px; }
-    .dial-card, .controls-card { background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.24); border-radius: 28px; padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-    .dial-title { text-align: center; font-weight: 700; color: white; font-size: 1.08rem; }
-    .dial-subtitle { color: rgba(255,255,255,0.78); font-size: 0.92rem; margin-top: -4px; }
-    .dial { width: min(76vw, 260px); height: min(76vw, 260px); max-width: 260px; max-height: 260px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.88); position: relative; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 62%, rgba(255,255,255,0.01) 100%); --indicator-angle: 0deg; }
-    .dial-indicator { position: absolute; inset: -4px; border-radius: 50%; pointer-events: none; transform: rotate(var(--indicator-angle)); transition: transform 0.22s ease; }
-    .dial-indicator::before { content: ""; position: absolute; left: 50%; top: -8px; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.96); box-shadow: 0 0 0 6px rgba(255,255,255,0.14), 0 4px 12px var(--ind-sh); }
-    .dial-controls { width: 100%; display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; gap: 10px; }
-    .step-btn { width: 56px; height: 56px; border: 0; border-radius: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.95), var(--step-to)); color: var(--accent-dark); font-size: 2rem; line-height: 1; font-weight: 500; box-shadow: 0 10px 22px var(--step-sh); cursor: pointer; }
-    .dial-center { text-align: center; min-width: 0; }
-    .dial-value { font-size: clamp(2.45rem, 10vw, 3.8rem); line-height: 1; font-weight: 800; letter-spacing: -0.05em; color: white; }
-    .dial-unit { margin-top: 8px; font-size: 1rem; color: rgba(255,255,255,0.88); font-weight: 600; }
+body.menu{font-family:var(--menu)}
+body.menu .top{border-bottom:1px solid #e6e6e6}
+body.menu .top .in{min-height:64px}
+body.menu .brand{display:flex;justify-content:space-between;align-items:baseline;width:100%;color:var(--ink);font-size:23px;font-weight:700;letter-spacing:-.02em}
+body.menu .brand-name::after{content:"."}
+body.menu .brand small{margin:0;color:#6b6e7b;font-size:12px;font-weight:500;letter-spacing:.08em}
 
-    .slider-wrap { width: 100%; margin-top: 6px; }
-    input[type="range"] { width: 100%; appearance: none; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.26); outline: none; }
-    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 28px; height: 28px; border-radius: 50%; border: 0; background: white; box-shadow: 0 4px 12px var(--range-sh); cursor: pointer; }
-    input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; border: 0; background: white; box-shadow: 0 4px 12px var(--range-sh); cursor: pointer; }
+.m-hero{margin:26px 0 22px}
+.m-hero h1{margin:0;color:var(--ink);font-size:clamp(40px,11.5vw,64px);font-weight:600;line-height:1.05;letter-spacing:-.025em}
 
-    .quick-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; width: 100%; }
-    .quick-grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; width: 100%; }
-    .chip { border: 1px solid rgba(255,255,255,0.24); background: rgba(255,255,255,0.12); color: white; border-radius: 999px; padding: 9px 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; text-align: center; }
-    .chip.active { background: white; color: var(--accent-dark); border-color: white; }
+.m-band{position:relative;z-index:0;padding-bottom:26px}
+.m-band::before{content:"";position:absolute;z-index:-1;top:84px;bottom:0;left:50%;width:100vw;background:#ededed;transform:translateX(-50%)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile,.m-brand{display:flex;flex-direction:column;min-height:176px;border-radius:3px;overflow:hidden}
+.tile{color:var(--ink);text-decoration:none;transition:transform .18s ease-out,box-shadow .18s ease-out;-webkit-tap-highlight-color:transparent}
+.tile.jasny{color:#fff}
+.tile:active{transform:scale(.985)}
+.tile-top{flex:1;display:block;padding:14px 14px 16px;background:var(--c)}
+.tile-no{display:grid;place-items:center;width:34px;height:34px;margin-bottom:14px;background:rgba(255,255,255,.36);border-radius:50%;font-size:13px;font-weight:600}
+.tile.jasny .tile-no{background:rgba(255,255,255,.22)}
+.tile b{display:block;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:-.01em}
+.tile-desc{display:block;margin-top:6px;font-size:13px;line-height:1.4;opacity:.88}
+.tile code{display:block;padding:11px 14px;background:var(--ink);color:#fff;font:500 13px var(--menu);text-align:center}
+.tile code .f{display:none}
+.c1{--c:#12b5e5}
+.c2{--c:#8a6dc7}
+.c3{--c:#2cc774}
+.c4{--c:#ffb80a}
+.c5{--c:#2f58b5}
+.m-brand-tag{padding:11px 14px;background:#f25a2b;color:#fff;font-size:13px;font-weight:500;text-align:center}
+.m-brand-name{flex:1;display:grid;place-items:center;padding:14px;background:var(--ink);color:#fff;font-size:clamp(21px,6vw,34px);font-weight:700;letter-spacing:-.02em}
 
-    .section-label { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.82); margin-bottom: 10px; align-self: stretch; }
-    .toggle-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
-    .toggle-btn { border: 1px solid rgba(255,255,255,0.24); background: rgba(255,255,255,0.12); color: white; border-radius: 999px; padding: 12px 14px; font-weight: 700; font-size: 0.94rem; cursor: pointer; text-align: center; }
-    .toggle-btn.active { background: white; color: var(--accent-dark); border-color: white; }
+.calc{display:grid;gap:14px}
+.main{display:grid;gap:14px;min-width:0}
 
-    .crea-grid { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
-    .crea-input { width: 100%; border: 1px solid rgba(255,255,255,0.26); background: rgba(255,255,255,0.92); color: var(--det-v); border-radius: 18px; padding: 14px 16px; font-size: 1.05rem; font-weight: 700; outline: none; }
-    .unit-badge { padding: 14px 12px; border-radius: 18px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.24); color: white; font-weight: 700; font-size: 0.95rem; min-width: 86px; text-align: center; }
-    .dual-value { width: 100%; border-radius: 18px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.2); padding: 12px 14px; color: rgba(255,255,255,0.92); font-size: 0.95rem; line-height: 1.45; }
-    .dual-value strong { color: white; }
+.result{padding:14px 18px 16px;background:var(--g700);border-radius:var(--r);color:#fff;transition:background-color .2s}
+.result-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.result .cap{color:rgba(255,255,255,.76);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.result-side{color:rgba(255,255,255,.88);font-size:13px;font-weight:500;text-align:right}
+.result-main{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+.result-num{font-size:clamp(42px,11.5vw,60px);font-weight:600;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.result-unit{color:rgba(255,255,255,.82);font-size:17px;font-weight:500}
+.result-msg{margin-top:10px;color:rgba(255,255,255,.82);font-size:13px}
+.result.warn{background:var(--w700)}
+.result.warn .result-msg{color:#fff;font-weight:600}
+.result.idle{background:var(--t600)}
 
-    .conc-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
-    .conc-btn { padding: 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.24); background: rgba(255,255,255,0.08); color: white; font-weight: 700; font-size: 0.88rem; cursor: pointer; text-align: center; }
-    .conc-btn.active { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
+.scale{position:relative;margin-top:14px;padding-bottom:18px}
+.scale-bar{position:relative;display:flex;gap:2px;height:8px}
+.scale-bar i{border-radius:2px;background:rgba(255,255,255,.3);transition:background-color .2s}
+.scale-bar i.on{background:#fff}
+.scale-bar b{position:absolute;top:-4px;width:4px;height:16px;margin-left:-2px;border-radius:2px;background:#fff;box-shadow:0 0 0 2px var(--g700);transition:left .2s ease-out}
+.scale span{position:absolute;bottom:0;color:rgba(255,255,255,.82);font-size:11px;transform:translateX(-50%)}
 
-    .input-card { background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.24); border-radius: 28px; padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-    .input-row { display: flex; flex-direction: column; gap: 8px; }
-    .input-row label { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.78); }
-    .input-wrap { display: flex; align-items: stretch; gap: 0; }
-    .field-input { flex: 1; border: none; border-radius: 18px 0 0 18px; background: rgba(255,255,255,0.92); color: var(--det-v); padding: 16px 18px; font-size: 1.3rem; font-weight: 800; outline: none; min-width: 0; width: 0; }
-    .field-input.rounded { border-radius: 18px; }
-    .field-suffix { flex-shrink: 0; display: flex; align-items: center; padding: 0 14px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.22); border-left: none; border-radius: 0 18px 18px 0; font-weight: 700; font-size: 0.92rem; color: white; white-space: nowrap; }
-    .unit-switcher { display: flex; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.24); }
-    .unit-sw-btn { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; transition: 0.15s ease; }
-    .unit-sw-btn.active { background: white; color: var(--accent-dark); }
-    .gluc-input-wrap { display: flex; flex-direction: column; gap: 10px; }
-    .equiv-note { font-size: 0.88rem; color: rgba(255,255,255,0.7); padding: 10px 14px; background: rgba(255,255,255,0.1); border-radius: 12px; }
+.stats{margin:0;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.stat{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 14px}
+.stat+.stat{border-top:1px solid var(--line)}
+.stat dt{color:var(--t600);font-size:13px}
+.stat dd{margin:0;color:var(--t900);font-size:14px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.stat.wide{display:block}
+.stat.wide dd{margin-top:4px;color:var(--g700);font:500 13px/1.5 var(--mono);text-align:left}
 
-    .details { margin-top: 6px; background: rgba(255,255,255,0.9); color: var(--det-v); border-radius: 24px; padding: 18px; box-shadow: 0 12px 28px var(--det-sh); }
-    .details-grid { display: grid; gap: 12px; }
-    .detail-box { border-radius: 16px; background: var(--det-box); padding: 14px; }
-    .detail-box .k { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--det-k); margin-bottom: 6px; font-weight: 700; }
-    .detail-box .v { font-size: 1rem; font-weight: 800; color: var(--det-v); }
-    .footnote { margin-top: 14px; font-size: 0.88rem; line-height: 1.45; color: var(--det-k); }
-    .footer { text-align: center; margin-top: 16px; color: rgba(255,255,255,0.88); font-size: 0.86rem; padding-bottom: 8px; }
+.rows{background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 16px}
+.row+.row{border-top:1px solid var(--line)}
+.row-label{flex:0 0 auto;color:var(--t900);font-size:15px;font-weight:500}
+.row-ctl{flex:0 1 380px;min-width:0}
+.equiv{margin-top:6px;color:var(--t500);font-size:13px}
 
-    @media (min-width: 860px) {
-      .app { max-width: 960px; }
-      .hero-body.two-col { grid-template-columns: 1fr 1fr; }
-      .details-grid.three-col { grid-template-columns: repeat(3, 1fr); }
-      .details-grid.four-col { grid-template-columns: repeat(4, 1fr); }
-      .dial { width: 240px; height: 240px; }
-    }
+.seg{display:flex;border-radius:var(--r);box-shadow:0 1px 2px rgba(10,13,18,.05)}
+.seg button{flex:1 1 0;min-width:0;min-height:42px;padding:8px 12px;background:var(--bg2);border:1px solid var(--line2);color:var(--t700);font-size:14px;font-weight:600;transition:background-color .12s}
+.seg button+button{border-left:0}
+.seg button:first-child{border-radius:var(--r) 0 0 var(--r)}
+.seg button:last-child{border-radius:0 var(--r) var(--r) 0}
+.seg button.active,.chip.active{background:var(--g650);border-color:var(--g650);color:#fff}
 
-    .menu-app { width: 100%; max-width: 600px; }
-    .menu-header { text-align: center; padding: 36px 20px 28px; }
-    .menu-header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.04em; margin: 0 0 10px; }
-    .menu-header p { color: rgba(255,255,255,0.8); font-size: 1rem; margin: 0; }
-    .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 0 24px; }
-    .tile { border-radius: 24px; padding: 22px 18px 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(12px); transition: transform 0.18s ease; }
-    .tile:active { transform: scale(0.97); }
-    .tile-dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 14px; }
-    .tile h2 { font-size: 1.08rem; font-weight: 800; margin: 0 0 6px; line-height: 1.2; letter-spacing: -0.02em; }
-    .tile p { font-size: 0.82rem; color: rgba(255,255,255,0.78); margin: 0; line-height: 1.4; }
-    .tile-bmi { background: linear-gradient(135deg, rgba(154,106,0,0.85), rgba(240,180,0,0.7)); box-shadow: 0 12px 28px rgba(90,58,0,0.3); }
-    .tile-bmi .tile-dot { background: linear-gradient(180deg,#fff3a5,#ffcf33); box-shadow: 0 0 10px rgba(255,240,160,0.8); }
-    .tile-ligno { background: linear-gradient(135deg, rgba(124,15,29,0.85), rgba(207,47,73,0.7)); box-shadow: 0 12px 28px rgba(85,9,23,0.3); }
-    .tile-ligno .tile-dot { background: linear-gradient(180deg,#ffd7de,#ff6b83); box-shadow: 0 0 10px rgba(255,187,199,0.8); }
-    .tile-gfr { background: linear-gradient(135deg, rgba(13,92,59,0.85), rgba(30,159,103,0.7)); box-shadow: 0 12px 28px rgba(8,67,42,0.3); }
-    .tile-gfr .tile-dot { background: linear-gradient(180deg,#d7ffe8,#63f3a7); box-shadow: 0 0 10px rgba(170,255,205,0.8); }
-    .tile-dexdor { background: linear-gradient(135deg, rgba(8,59,143,0.85), rgba(20,168,234,0.7)); box-shadow: 0 12px 28px rgba(6,26,68,0.3); }
-    .tile-dexdor .tile-dot { background: linear-gradient(180deg,#f05fd6,#7647ff); box-shadow: 0 0 10px rgba(236,96,212,0.7); }
-    .tile-natremia { background: linear-gradient(135deg, rgba(61,10,110,0.85), rgba(139,47,201,0.7)); box-shadow: 0 12px 28px rgba(45,5,80,0.3); grid-column: span 2; }
-    .tile-natremia .tile-dot { background: linear-gradient(180deg,#f0d7ff,#c86bff); box-shadow: 0 0 10px rgba(220,170,255,0.8); }
-    .menu-footer { text-align: center; color: rgba(255,255,255,0.7); font-size: 0.84rem; padding-bottom: 10px; }
-  </style>
+.field{display:flex;align-items:stretch;background:#fff;border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 1px 2px rgba(10,13,18,.05);overflow:hidden}
+.field:focus-within{border-color:var(--g600);box-shadow:0 0 0 3px rgba(17,122,102,.18)}
+.field.bad{border-color:var(--e600);box-shadow:0 0 0 3px rgba(217,45,32,.14)}
+.field input{flex:1;width:0;min-width:0;height:46px;padding:0 12px;background:none;border:0;outline:0;color:var(--t900);font-size:18px;font-weight:500;font-variant-numeric:tabular-nums}
+.field .unit{display:flex;align-items:center;padding:0 14px;background:var(--bg2);border-left:1px solid var(--line2);color:var(--t600);font-size:14px;font-weight:500;white-space:nowrap}
+.field .seg{flex:0 0 auto;border-radius:0;box-shadow:none}
+.field .seg button{flex:0 0 auto;min-height:46px;padding:0 12px;border:0;border-left:1px solid var(--line2);border-radius:0}
+.field .seg button:focus-visible{outline-offset:-2px}
+
+.dials{display:grid;gap:14px}
+.card{min-width:0;padding:14px 16px 16px;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.card-title{color:var(--t900);font-size:15px;font-weight:600}
+.card-note{color:var(--t500);font-size:13px}
+.card.warn .card-note{color:var(--w700);font-weight:600}
+
+.dial{position:relative;display:grid;grid-template-columns:46px 1fr 46px;align-items:center;gap:4px;width:min(240px,72vw);height:min(240px,72vw);margin:12px auto 10px;padding:0 22px;background:var(--bg2);border:1px solid var(--line);border-radius:50%}
+.dial svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.g-track,.g-arc,.g-zone{fill:none;stroke-linecap:round}
+.g-track{stroke:var(--track);stroke-width:8}
+.g-arc{stroke:var(--g600);stroke-width:8;stroke-dasharray:100;transition:stroke-dashoffset .2s ease-out,stroke .2s}
+.g-zone{stroke:var(--g300);stroke-width:3}
+.g-tick{stroke:var(--line2);stroke-width:1.5}
+.g-knob{transform-box:view-box;transform-origin:120px 120px;transform:rotate(var(--a,0deg));transition:transform .2s ease-out}
+.g-knob circle{fill:#fff;stroke:var(--g600);stroke-width:3;transition:stroke .2s}
+.g-lab{fill:var(--t500);font:500 11px var(--sans);text-anchor:middle}
+.card.warn .g-arc,.card.warn .g-knob circle{stroke:var(--w600)}
+.dial-mid{position:relative;z-index:1;min-width:0;text-align:center}
+.dial-val{color:var(--t900);font-size:clamp(28px,8vw,36px);font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;transition:color .2s}
+.card.warn .dial-val{color:var(--w700)}
+.dial-unit{margin-top:6px;color:var(--t600);font-size:13px;font-weight:500}
+.step{position:relative;z-index:1;width:46px;height:46px;padding:0;background:#fff;border:1px solid var(--line2);border-radius:50%;box-shadow:0 1px 2px rgba(10,13,18,.08);color:var(--t700)}
+.step::before,.step.plus::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;border-radius:1px;transform:translate(-50%,-50%)}
+.step::before{width:16px;height:2px}
+.step.plus::after{width:2px;height:16px}
+.step:active{background:var(--bg3)}
+.step:disabled{opacity:.4;cursor:default}
+
+input[type=range]{--p:50%;display:block;width:100%;height:32px;margin:0;padding:0;background:none;-webkit-appearance:none;appearance:none;touch-action:pan-y;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--g600) var(--p),var(--track) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;background:#fff;border:1px solid var(--line2);border-radius:50%;box-shadow:0 1px 3px rgba(10,13,18,.2)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--track)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--g600)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;background:#fff;border:1px solid var(--line2);border-radius:50%;box-shadow:0 1px 3px rgba(10,13,18,.2)}
+.card.warn input[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--w600) var(--p),var(--track) var(--p))}
+.card.warn input[type=range]::-moz-range-progress{background:var(--w600)}
+
+.chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.chips.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.chip{min-height:38px;padding:6px 4px;background:var(--bg2);border:1px solid var(--line2);border-radius:var(--r);color:var(--t700);font-size:14px;font-weight:600;transition:background-color .12s}
+.chip:active{background:var(--bg3)}
+
+.foot{padding:20px 0 calc(env(safe-area-inset-bottom,0px) + 28px);border-top:1px solid var(--line);color:var(--t500);font-size:12px;text-align:center}
+
+@media (hover:hover){
+  .btn:hover,.step:not(:disabled):hover,.chip:not(.active):hover,.seg button:not(.active):hover{background:var(--bg3)}
+  .tile:hover{transform:translateY(-4px);box-shadow:0 16px 22px -16px rgba(44,46,59,.6)}
+}
+@media (max-width:559px){
+  .row{flex-direction:column;align-items:stretch;gap:8px}
+  .row-ctl{flex:0 0 auto}
+}
+@media (min-width:620px){
+  .dials{grid-template-columns:1fr 1fr}
+}
+@media (min-width:760px){
+  .tiles{grid-template-columns:repeat(3,1fr);gap:14px}
+}
+@media (max-width:899px){
+  .side{display:contents}
+  .result{position:sticky;top:0;z-index:5;order:1;box-shadow:0 8px 18px -10px rgba(10,13,18,.45)}
+  .main{order:2}
+  .stats{order:3}
+  .result-msg{min-height:2.9em}
+}
+@media (min-width:900px){
+  .m-hero{margin:44px 0 32px}
+  .m-band::before{top:110px}
+  .tile,.m-brand{min-height:220px}
+  .tile-top{padding:20px 20px 22px}
+  .tile-no{width:40px;height:40px;margin-bottom:18px;font-size:14px}
+  .tile b{font-size:22px}
+  .tile-desc{font-size:14px}
+  .tile code{padding:13px 20px}
+  .tile code .f{display:inline}
+  .tile code .u{display:none}
+  .m-brand-tag{padding:13px 20px}
+  .calc{grid-template-columns:minmax(0,1fr) 340px;align-items:start;gap:24px}
+  .main{order:1}
+  .side{order:2;position:sticky;top:16px;display:grid;gap:14px}
+  .result{padding:18px 20px 20px}
+  .result-num{font-size:60px}
+}
+@media (prefers-reduced-motion:reduce){
+  .page{animation:none}
+  .tile{transition:none}
+  .g-arc,.g-knob,.scale-bar b{transition:none}
+}
+</style>
 </head>
-<body class="t-menu">
+<body class="menu">
 
-  <div id="page-menu" class="page active">
-    <div class="menu-app">
-      <div class="menu-header">
-        <h1>Kalkulatory Medyczne</h1>
-        <p>Wybierz kalkulator</p>
-      </div>
-      <div class="tiles">
-        <div class="tile tile-bmi" onclick="showPage('bmi')">
-          <div class="tile-dot"></div>
-          <h2>Kalkulator BMI</h2>
-          <p>Body Mass Index — wzrost i masa ciała</p>
-        </div>
-        <div class="tile tile-ligno" onclick="showPage('ligno')">
-          <div class="tile-dot"></div>
-          <h2>Lidokaina</h2>
-          <p>Wlew ciągły 1% lub 2%, dawka mg/kg/h</p>
-        </div>
-        <div class="tile tile-gfr" onclick="showPage('gfr')">
-          <div class="tile-dot"></div>
-          <h2>GFR</h2>
-          <p>Cockcroft-Gault — klirens kreatyniny</p>
-        </div>
-        <div class="tile tile-dexdor" onclick="showPage('dexdor')">
-          <div class="tile-dot"></div>
-          <h2>Dexdor</h2>
-          <p>Deksmedetomidyna — infuzja ciągła ml/h</p>
-        </div>
-        <div class="tile tile-natremia" onclick="showPage('natremia')">
-          <div class="tile-dot"></div>
-          <h2>Sód skorygowany w hiperglikemii</h2>
-          <p>Korygowane stężenie Na⁺ wg glikemii — przelicznik mg/dl ↔ mmol/l</p>
-        </div>
-      </div>
-      <div class="menu-footer">© MICHAA 2026</div>
+<div class="alert" role="note">
+  <div class="in">
+    <b>Wyłącznie do celów naukowych - nie do użytku klinicznego</b>
+    <span>Kalkulatory nie są wyrobem medycznym, a wyniki nie mogą być podstawą decyzji dotyczących diagnostyki ani leczenia pacjentów.</span>
+  </div>
+</div>
+
+<header class="top">
+  <div class="in">
+    <div class="brand"><span class="brand-name">Kalkulatory</span><small>MICHAA</small></div>
+    <button class="btn" type="button" id="back" hidden>Powrót</button>
+  </div>
+</header>
+
+<main class="in">
+
+  <section class="page" id="page-menu">
+    <div class="m-hero">
+      <h1>Kalkulatory<br>medyczne</h1>
     </div>
-  </div>
+    <div class="m-band">
+      <nav class="tiles">
+        <a class="tile c1" href="#bmi"><span class="tile-top"><span class="tile-no">01</span><b>BMI</b><span class="tile-desc">Wskaźnik masy ciała - wzrost i masa</span></span><code><span class="f">kg / m²</span><span class="u">kg/m²</span></code></a>
+        <a class="tile c2 jasny" href="#lidokaina"><span class="tile-top"><span class="tile-no">02</span><b>Lidokaina</b><span class="tile-desc">Wlew ciągły 1% lub 2%, dawka w mg/kg/h</span></span><code><span class="f">(mg/kg/h × kg) / (mg/ml)</span><span class="u">ml/h</span></code></a>
+        <a class="tile c3" href="#gfr"><span class="tile-top"><span class="tile-no">03</span><b>GFR</b><span class="tile-desc">Cockcroft-Gault - klirens kreatyniny</span></span><code><span class="f">[(140 - wiek) × kg] / (72 × kreat.)</span><span class="u">ml/min</span></code></a>
+        <a class="tile c4" href="#dexdor"><span class="tile-top"><span class="tile-no">04</span><b>Dexdor</b><span class="tile-desc">Deksmedetomidyna - wlew ciągły w ml/h</span></span><code><span class="f">(µg/kg/h × kg) / (µg/ml)</span><span class="u">ml/h</span></code></a>
+        <a class="tile c5 jasny" href="#sod"><span class="tile-top"><span class="tile-no">05</span><b>Sód skorygowany</b><span class="tile-desc">Stężenie Na w hiperglikemii, glikemia w mg/dl lub mmol/l</span></span><code><span class="f">Na + 2 × [(glik. - 5,6) / 5,6]</span><span class="u">mmol/l</span></code></a>
+        <div class="m-brand"><span class="m-brand-tag">Tylko do celów naukowych</span><span class="m-brand-name">Kalkulatory.</span></div>
+      </nav>
+    </div>
+  </section>
 
-  <div id="page-bmi" class="page t-bmi">
-    <main class="app">
-      <section class="hero">
-        <div class="hero-top">
-          <div class="brand">
-            <div class="brand-badge"><span class="dot"></span>BMI / Body Mass Index</div>
-            <button class="back-btn" onclick="showPage('menu')">← Powrót</button>
-            <div style="font-weight:700;opacity:0.9;">MICHAA</div>
-          </div>
-          <h1>Kalkulator BMI</h1>
-          <p>Podaj wzrost i masę ciała. Wynik BMI pojawia się od razu na górze.</p>
-        </div>
-        <div class="result-card">
-          <div class="result-top">
-            <div class="label">Wynik BMI</div>
-            <div class="sublabel" id="bmi-cat">Prawidłowe</div>
-          </div>
-          <div class="result-value">
-            <div class="result-number" id="bmi-out">24.22</div>
-            <div class="result-unit">BMI</div>
+  <section class="page" id="page-bmi" hidden>
+    <div class="page-head">
+      <h1>Kalkulator BMI</h1>
+      <p>Podaj wzrost i masę ciała.</p>
+    </div>
+    <div class="calc">
+      <aside class="side">
+        <div class="result">
+          <div class="result-head"><span class="cap">Wynik BMI</span><span class="result-side" id="bmi-cat"></span></div>
+          <div class="result-main"><span class="result-num" id="bmi-out"></span><span class="result-unit">kg/m²</span></div>
+          <div class="scale" aria-hidden="true">
+            <div class="scale-bar" id="bmi-bar"><i style="flex:3.5"></i><i style="flex:6.5"></i><i style="flex:5"></i><i style="flex:10"></i><b id="bmi-mark"></b></div>
+            <span style="left:14%">18,5</span><span style="left:40%">25</span><span style="left:60%">30</span>
           </div>
         </div>
-        <div class="hero-body two-col">
-          <div>
-            <div class="dial-card">
-              <div class="dial-title">Wzrost</div>
-              <div class="dial-subtitle">m</div>
-              <div class="dial" id="bmi-hdial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="bmiSH(bmiH-0.01)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="bmi-hval">1.70</div><div class="dial-unit">m</div></div>
-                  <button class="step-btn" onclick="bmiSH(bmiH+0.01)">+</button>
-                </div>
-              </div>
-              <div class="slider-wrap"><input id="bmi-hr" type="range" min="1.40" max="2.10" step="0.01" value="1.70" oninput="bmiU()"></div>
-              <div class="quick-grid" id="bmi-qh"></div>
-            </div>
-          </div>
-          <div>
-            <div class="dial-card">
-              <div class="dial-title">Masa ciała</div>
-              <div class="dial-subtitle">kg</div>
-              <div class="dial" id="bmi-wdial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="bmiSW(bmiW-1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="bmi-wval">70</div><div class="dial-unit">kg</div></div>
-                  <button class="step-btn" onclick="bmiSW(bmiW+1)">+</button>
-                </div>
-              </div>
-              <div class="slider-wrap"><input id="bmi-wr" type="range" min="30" max="180" step="1" value="70" oninput="bmiU()"></div>
-              <div class="quick-grid" id="bmi-qw"></div>
-            </div>
-          </div>
+        <dl class="stats">
+          <div class="stat wide"><dt>Wzór</dt><dd>BMI = kg / m²</dd></div>
+          <div class="stat"><dt>Masa</dt><dd id="bmi-wi"></dd></div>
+          <div class="stat"><dt>Wzrost</dt><dd id="bmi-hi"></dd></div>
+        </dl>
+      </aside>
+      <div class="main">
+        <div class="dials">
+          <div class="card" id="bmi-h"></div>
+          <div class="card" id="bmi-w"></div>
         </div>
-        <div style="padding:0 22px 22px;">
-          <section class="details">
-            <div class="details-grid three-col">
-              <div class="detail-box"><span class="k">Wzór</span><span class="v">BMI = kg / (m²)</span></div>
-              <div class="detail-box"><span class="k">Masa</span><span class="v" id="bmi-wi">70 kg</span></div>
-              <div class="detail-box"><span class="k">Wzrost</span><span class="v" id="bmi-hi">1.70 m</span></div>
-            </div>
-          </section>
-        </div>
-      </section>
-      <div class="footer">Kalkulator BMI / © MICHAA 2026</div>
-    </main>
-  </div>
+      </div>
+    </div>
+  </section>
 
-  <div id="page-ligno" class="page t-ligno">
-    <main class="app">
-      <section class="hero">
-        <div class="hero-top">
-          <div class="brand">
-            <div class="brand-badge"><span class="dot"></span>Lidokaina / Wlew ciągły</div>
-            <button class="back-btn" onclick="showPage('menu')">← Powrót</button>
-            <div style="font-weight:700;opacity:0.9;">MICHAA</div>
-          </div>
-          <h1>Kalkulator wlewu lidokainy</h1>
-          <p>Obliczenie przepływu pompy w ml/h dla roztworu 1% lub 2% i dawki 0,5–3 mg/kg/h.</p>
+  <section class="page" id="page-lidokaina" hidden>
+    <div class="page-head">
+      <h1>Kalkulator wlewu lidokainy</h1>
+      <p>Przepływ pompy w ml/h dla roztworu 1% lub 2% i dawki 0,5-3 mg/kg/h.</p>
+    </div>
+    <div class="calc">
+      <aside class="side">
+        <div class="result" id="lid-res">
+          <div class="result-head"><span class="cap">Prędkość wlewu</span><span class="result-side" id="lid-cl"></span></div>
+          <div class="result-main"><span class="result-num" id="lid-out"></span><span class="result-unit">ml/h</span></div>
+          <div class="result-msg" id="lid-msg" aria-live="polite"></div>
         </div>
-        <div class="result-card">
-          <div class="result-top">
-            <div class="label">Prędkość wlewu</div>
-            <div class="sublabel" id="lig-cl">1% = 10 mg/ml</div>
-          </div>
-          <div class="result-value">
-            <div class="result-number" id="lig-out">7.00</div>
-            <div class="result-unit">ml/h</div>
-          </div>
-        </div>
-        <div class="hero-body two-col">
-          <div>
-            <div class="section-label">Stężenie roztworu</div>
-            <div class="toggle-grid-2" style="margin-bottom:18px;">
-              <button class="toggle-btn active" id="lig-c1" onclick="ligSC(10)">1% (10 mg/ml)</button>
-              <button class="toggle-btn" id="lig-c2" onclick="ligSC(20)">2% (20 mg/ml)</button>
-            </div>
-            <div class="dial-card">
-              <div class="dial-title">Masa ciała</div>
-              <div class="dial-subtitle">kg</div>
-              <div class="dial" id="lig-wdial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="ligSW(ligW-1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="lig-wval">70</div><div class="dial-unit">kg</div></div>
-                  <button class="step-btn" onclick="ligSW(ligW+1)">+</button>
-                </div>
+        <dl class="stats">
+          <div class="stat wide"><dt>Wzór</dt><dd>ml/h = (mg/kg/h × kg) / (mg/ml)</dd></div>
+          <div class="stat"><dt>Zapotrzebowanie</dt><dd id="lid-mph"></dd></div>
+          <div class="stat"><dt>Stężenie</dt><dd id="lid-ci"></dd></div>
+          <div class="stat"><dt>Zakres dawki</dt><dd>0,5-3 mg/kg/h</dd></div>
+        </dl>
+      </aside>
+      <div class="main">
+        <div class="rows">
+          <div class="row">
+            <span class="row-label">Stężenie roztworu</span>
+            <div class="row-ctl">
+              <div class="seg" id="lid-c">
+                <button type="button" class="active" data-v="10">1% (10 mg/ml)</button>
+                <button type="button" data-v="20">2% (20 mg/ml)</button>
               </div>
-              <div class="slider-wrap"><input id="lig-wr" type="range" min="30" max="180" step="1" value="70" oninput="ligU()"></div>
-              <div class="quick-grid" id="lig-qw"></div>
-            </div>
-          </div>
-          <div>
-            <div class="dial-card">
-              <div class="dial-title">Dawka</div>
-              <div class="dial-subtitle">mg/kg/h</div>
-              <div class="dial" id="lig-ddial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="ligSD(ligD-0.1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="lig-dval">1.0</div><div class="dial-unit">mg/kg/h</div></div>
-                  <button class="step-btn" onclick="ligSD(ligD+0.1)">+</button>
-                </div>
-              </div>
-              <div class="slider-wrap"><input id="lig-dr" type="range" min="0.5" max="3.0" step="0.1" value="1.0" oninput="ligU()"></div>
-              <div class="quick-grid" id="lig-qd"></div>
             </div>
           </div>
         </div>
-        <div style="padding:0 22px 22px;">
-          <section class="details">
-            <div class="details-grid four-col">
-              <div class="detail-box"><span class="k">Wzór</span><span class="v">ml/h = (mg/kg/h × kg) / (mg/ml)</span></div>
-              <div class="detail-box"><span class="k">Zapotrzebowanie</span><span class="v" id="lig-mph">70.0 mg/h</span></div>
-              <div class="detail-box"><span class="k">Stężenie</span><span class="v" id="lig-ci">1% = 10 mg/ml</span></div>
-              <div class="detail-box"><span class="k">Zakres</span><span class="v">0,5–3 mg/kg/h</span></div>
-            </div>
-          </section>
+        <div class="dials">
+          <div class="card" id="lid-w"></div>
+          <div class="card" id="lid-d"></div>
         </div>
-      </section>
-      <div class="footer">Lidokaina / © MICHAA 2026</div>
-    </main>
-  </div>
+      </div>
+    </div>
+  </section>
 
-  <div id="page-gfr" class="page t-gfr">
-    <main class="app">
-      <section class="hero">
-        <div class="hero-top">
-          <div class="brand">
-            <div class="brand-badge"><span class="dot"></span>GFR / Cockcroft-Gault</div>
-            <button class="back-btn" onclick="showPage('menu')">← Powrót</button>
-            <div style="font-weight:700;opacity:0.9;">MICHAA</div>
-          </div>
-          <h1>Kalkulator GFR</h1>
-          <p>Wzór Cockcrofta-Gaulta. Kreatynina domyślnie w mg/dl z automatycznym przeliczeniem na µmol/l i odwrotnie.</p>
+  <section class="page" id="page-gfr" hidden>
+    <div class="page-head">
+      <h1>Kalkulator GFR</h1>
+      <p>Wzór Cockcrofta-Gaulta. Kreatynina w mg/dl lub µmol/l.</p>
+    </div>
+    <div class="calc">
+      <aside class="side">
+        <div class="result" id="gfr-res">
+          <div class="result-head"><span class="cap">Wynik</span><span class="result-side" id="gfr-cat"></span></div>
+          <div class="result-main"><span class="result-num" id="gfr-out"></span><span class="result-unit">ml/min</span></div>
         </div>
-        <div class="result-card">
-          <div class="result-top">
-            <div class="label">Wynik</div>
-            <div class="sublabel" id="gfr-cat">Cockcroft-Gault</div>
-          </div>
-          <div class="result-value">
-            <div class="result-number" id="gfr-out">80.86</div>
-            <div class="result-unit">ml/min</div>
-          </div>
-        </div>
-        <div class="hero-body two-col">
-          <div class="controls-card">
-            <div class="section-label">Płeć</div>
-            <div class="toggle-grid-2">
-              <button class="toggle-btn active" id="gfr-m" onclick="gfrSS('male')">Mężczyzna</button>
-              <button class="toggle-btn" id="gfr-f" onclick="gfrSS('female')">Kobieta</button>
+        <dl class="stats">
+          <div class="stat wide"><dt>Wzór</dt><dd>[(140 - wiek) × kg] / [72 × kreatynina mg/dl]</dd></div>
+          <div class="stat"><dt>Korekta</dt><dd id="gfr-si"></dd></div>
+          <div class="stat"><dt>Kreatynina</dt><dd id="gfr-cri"></dd></div>
+          <div class="stat"><dt>Parametry</dt><dd id="gfr-pi"></dd></div>
+        </dl>
+      </aside>
+      <div class="main">
+        <div class="rows">
+          <div class="row">
+            <span class="row-label">Płeć</span>
+            <div class="row-ctl">
+              <div class="seg" id="gfr-sex">
+                <button type="button" class="active" data-v="m">Mężczyzna</button>
+                <button type="button" data-v="k">Kobieta</button>
+              </div>
             </div>
-            <div class="section-label" style="margin-top:6px;">Kreatynina</div>
-            <div class="toggle-grid-2">
-              <button class="toggle-btn active" id="gfr-mg" onclick="gfrSU('mgdl')">mg/dl</button>
-              <button class="toggle-btn" id="gfr-um" onclick="gfrSU('umol')">µmol/l</button>
-            </div>
-            <div class="crea-grid">
-              <input class="crea-input" id="gfr-cr" type="number" min="0" step="0.01" value="1.2" inputmode="decimal" oninput="gfrU()">
-              <div class="unit-badge" id="gfr-ub">mg/dl</div>
-            </div>
-            <div class="dual-value" id="gfr-mir"><strong>Odpowiednik:</strong> 106.1 µmol/l</div>
           </div>
-          <div>
-            <div class="dial-card">
-              <div class="dial-title">Masa ciała</div>
-              <div class="dial-subtitle">kg</div>
-              <div class="dial" id="gfr-wdial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="gfrSW(gfrW-1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="gfr-wval">70</div><div class="dial-unit">kg</div></div>
-                  <button class="step-btn" onclick="gfrSW(gfrW+1)">+</button>
+          <div class="row">
+            <label class="row-label" for="gfr-cr-in">Kreatynina</label>
+            <div class="row-ctl">
+              <div class="field">
+                <input id="gfr-cr-in" type="text" inputmode="decimal" autocomplete="off" value="1,2">
+                <div class="seg" id="gfr-cr-seg">
+                  <button type="button" class="active" data-v="mgdl">mg/dl</button>
+                  <button type="button" data-v="umol">µmol/l</button>
                 </div>
               </div>
-              <div class="slider-wrap"><input id="gfr-wr" type="range" min="30" max="180" step="1" value="70" oninput="gfrU()"></div>
-              <div class="quick-grid" id="gfr-qw"></div>
-            </div>
-            <div class="dial-card" style="margin-top:18px;">
-              <div class="dial-title">Wiek</div>
-              <div class="dial-subtitle">lata</div>
-              <div class="dial" id="gfr-adial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="gfrSA(gfrA-1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="gfr-aval">40</div><div class="dial-unit">lat</div></div>
-                  <button class="step-btn" onclick="gfrSA(gfrA+1)">+</button>
-                </div>
-              </div>
-              <div class="slider-wrap"><input id="gfr-ar" type="range" min="17" max="105" step="1" value="40" oninput="gfrU()"></div>
-              <div class="quick-grid" id="gfr-qa"></div>
+              <div class="equiv" id="gfr-cr-eq"></div>
             </div>
           </div>
         </div>
-        <div style="padding:0 22px 22px;">
-          <section class="details">
-            <div class="details-grid four-col">
-              <div class="detail-box"><span class="k">Wzór</span><span class="v">[(140−wiek)×kg] / [72×krea mg/dl]</span></div>
-              <div class="detail-box"><span class="k">Korekta</span><span class="v" id="gfr-si">Mężczyzna × 1.00</span></div>
-              <div class="detail-box"><span class="k">Kreatynina</span><span class="v" id="gfr-cri">1.20 mg/dl</span></div>
-              <div class="detail-box"><span class="k">Parametry</span><span class="v" id="gfr-pi">70 kg / 40 lat</span></div>
-            </div>
-          </section>
+        <div class="dials">
+          <div class="card" id="gfr-w"></div>
+          <div class="card" id="gfr-a"></div>
         </div>
-      </section>
-      <div class="footer">Cockcroft-Gault / © MICHAA 2026</div>
-    </main>
-  </div>
+      </div>
+    </div>
+  </section>
 
-  <div id="page-dexdor" class="page t-dexdor">
-    <main class="app">
-      <section class="hero">
-        <div class="hero-top">
-          <div class="brand">
-            <div class="brand-badge"><span class="dot"></span>Dexdor / Dexmedetomidyna</div>
-            <button class="back-btn" onclick="showPage('menu')">← Powrót</button>
-            <div style="font-weight:700;opacity:0.9;">©MICHAA</div>
-          </div>
-          <h1>Kalkulator infuzji</h1>
-          <p>Sedacja ciągła bez bolusa. Wynik podany jako przepływ pompy w ml/h.</p>
+  <section class="page" id="page-dexdor" hidden>
+    <div class="page-head">
+      <h1>Kalkulator wlewu Dexdoru</h1>
+      <p>Deksmedetomidyna, wlew ciągły bez bolusa. Wynik jako przepływ pompy w ml/h.</p>
+    </div>
+    <div class="calc">
+      <aside class="side">
+        <div class="result" id="dex-res">
+          <div class="result-head"><span class="cap">Prędkość wlewu</span><span class="result-side" id="dex-cl"></span></div>
+          <div class="result-main"><span class="result-num" id="dex-out"></span><span class="result-unit">ml/h</span></div>
+          <div class="result-msg" id="dex-msg" aria-live="polite"></div>
         </div>
-        <div class="result-card">
-          <div class="result-top">
-            <div class="label">Prędkość wlewu</div>
-            <div class="sublabel" id="dex-cl">8 µg/ml</div>
-          </div>
-          <div class="result-value">
-            <div class="result-number" id="dex-out">6.13</div>
-            <div class="result-unit">ml/h</div>
-          </div>
-        </div>
-        <div class="hero-body two-col">
-          <div>
-            <div class="section-label">Stężenie roztworu</div>
-            <div class="conc-btns" style="margin-bottom:18px;">
-              <button class="conc-btn active" id="dex-c8" onclick="dexSC(8)">400 µg / 50 ml (8 µg/ml)</button>
-              <button class="conc-btn" id="dex-c4" onclick="dexSC(4)">200 µg / 50 ml (4 µg/ml)</button>
-            </div>
-            <div class="dial-card">
-              <div class="dial-title">Masa pacjenta</div>
-              <div class="dial-subtitle">kg</div>
-              <div class="dial" id="dex-wdial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="dexSW(dexW-1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="dex-wval">70</div><div class="dial-unit">kg</div></div>
-                  <button class="step-btn" onclick="dexSW(dexW+1)">+</button>
-                </div>
+        <dl class="stats">
+          <div class="stat wide"><dt>Wzór</dt><dd>ml/h = (µg/kg/h × kg) / (µg/ml)</dd></div>
+          <div class="stat"><dt>Zapotrzebowanie</dt><dd id="dex-uph"></dd></div>
+          <div class="stat"><dt>Zakres dawki</dt><dd>0,2-1,4 µg/kg/h</dd></div>
+        </dl>
+      </aside>
+      <div class="main">
+        <div class="rows">
+          <div class="row">
+            <span class="row-label">Stężenie roztworu</span>
+            <div class="row-ctl">
+              <div class="seg" id="dex-c">
+                <button type="button" class="active" data-v="8">400 µg / 50 ml (8 µg/ml)</button>
+                <button type="button" data-v="4">200 µg / 50 ml (4 µg/ml)</button>
               </div>
-              <div class="slider-wrap"><input id="dex-wr" type="range" min="20" max="200" step="1" value="70" oninput="dexU()"></div>
-              <div class="quick-grid" id="dex-qw"></div>
-            </div>
-          </div>
-          <div>
-            <div class="dial-card">
-              <div class="dial-title">Dawka</div>
-              <div class="dial-subtitle">mcg/kg/hr</div>
-              <div class="dial" id="dex-ddial">
-                <div class="dial-indicator"></div>
-                <div class="dial-controls">
-                  <button class="step-btn" onclick="dexSD(dexD-0.1)">−</button>
-                  <div class="dial-center"><div class="dial-value" id="dex-dval">0.7</div><div class="dial-unit">µg/kg/h</div></div>
-                  <button class="step-btn" onclick="dexSD(dexD+0.1)">+</button>
-                </div>
-              </div>
-              <div class="slider-wrap"><input id="dex-dr" type="range" min="0.2" max="1.4" step="0.1" value="0.7" oninput="dexU()"></div>
-              <div class="quick-grid-4" id="dex-qd"></div>
             </div>
           </div>
         </div>
-        <div style="padding:0 22px 22px;">
-          <section class="details">
-            <div class="details-grid three-col">
-              <div class="detail-box"><span class="k">Wzór</span><span class="v">ml/h = (µg/kg/h × kg) / (µg/ml)</span></div>
-              <div class="detail-box"><span class="k">Zapotrzebowanie</span><span class="v" id="dex-uph">49.0 µg/h</span></div>
-              <div class="detail-box"><span class="k">Zakres</span><span class="v">0,2–1,4 µg/kg/h</span></div>
-            </div>
-            <div class="footnote">Kalkulator wyłącznie do celów naukowych.</div>
-          </section>
+        <div class="dials">
+          <div class="card" id="dex-w"></div>
+          <div class="card" id="dex-d"></div>
         </div>
-      </section>
-      <div class="footer">Dexmedetomidyna / Dexdor — kalkulator przepływu pompy</div>
-    </main>
-  </div>
+      </div>
+    </div>
+  </section>
 
-  <div id="page-natremia" class="page t-natremia">
-    <main class="app">
-      <section class="hero">
-        <div class="hero-top">
-          <div class="brand">
-            <div class="brand-badge"><span class="dot"></span>Sód / Hiperglikemia</div>
-            <button class="back-btn" onclick="showPage('menu')">← Powrót</button>
-            <div style="font-weight:700;opacity:0.9;">MICHAA</div>
-          </div>
-          <h1>Sód skorygowany</h1>
-          <p>Korygowane stężenie sodu w hiperglikemii. Glikemia domyślnie w mg/dl z przeliczeniem na mmol/l.</p>
+  <section class="page" id="page-sod" hidden>
+    <div class="page-head">
+      <h1>Sód skorygowany</h1>
+      <p>Skorygowane stężenie sodu w hiperglikemii. Glikemia w mg/dl lub mmol/l.</p>
+    </div>
+    <div class="calc">
+      <aside class="side">
+        <div class="result" id="sod-res">
+          <div class="result-head"><span class="cap">Stężenie sodu</span><span class="result-side" id="sod-corr"></span></div>
+          <div class="result-main"><span class="result-num" id="sod-out"></span><span class="result-unit">mmol/l</span></div>
         </div>
-        <div class="result-card">
-          <div class="result-top">
-            <div class="label">Stężenie sodu</div>
-            <div class="sublabel" id="nat-corr-lbl">korekta: +0.00</div>
-          </div>
-          <div class="result-value">
-            <div class="result-number" id="nat-out">140.00</div>
-            <div class="result-unit">mmol/l</div>
-          </div>
-        </div>
-        <div class="hero-body">
-          <div class="input-card">
-            <div class="input-row">
-              <label>Zmierzone stężenie Na⁺</label>
-              <div class="input-wrap">
-                <input class="field-input" id="nat-ni" type="number" min="100" max="170" step="1" value="140" inputmode="decimal" oninput="natU()">
-                <div class="field-suffix">mmol/l</div>
-              </div>
-            </div>
-            <div class="input-row">
-              <label>Glikemia</label>
-              <div class="gluc-input-wrap">
-                <div class="unit-switcher">
-                  <button class="unit-sw-btn active" id="nat-mgdl" onclick="natSGU('mgdl')">mg/dl</button>
-                  <button class="unit-sw-btn" id="nat-mmol" onclick="natSGU('mmol')">mmol/l</button>
-                </div>
-                <div class="input-wrap">
-                  <input class="field-input" id="nat-gi" type="number" min="0" step="1" value="100" inputmode="decimal" oninput="natU()">
-                  <div class="field-suffix" id="nat-gsuffix">mg/dl</div>
-                </div>
-                <div class="equiv-note" id="nat-mir">Odpowiednik: 5.55 mmol/l</div>
+        <dl class="stats">
+          <div class="stat wide"><dt>Wzór</dt><dd>Na + 2 × [(glikemia mmol/l - 5,6) / 5,6]</dd></div>
+          <div class="stat"><dt>Zmierzone Na</dt><dd id="sod-dna"></dd></div>
+          <div class="stat"><dt>Glikemia</dt><dd id="sod-dg"></dd></div>
+          <div class="stat"><dt>Korekta</dt><dd id="sod-dc"></dd></div>
+        </dl>
+      </aside>
+      <div class="main">
+        <div class="rows">
+          <div class="row">
+            <label class="row-label" for="sod-na">Zmierzone stężenie Na</label>
+            <div class="row-ctl">
+              <div class="field">
+                <input id="sod-na" type="text" inputmode="decimal" autocomplete="off">
+                <span class="unit">mmol/l</span>
               </div>
             </div>
           </div>
-        </div>
-        <div style="padding:0 22px 22px;">
-          <section class="details">
-            <div class="details-grid four-col">
-              <div class="detail-box"><span class="k">Wzór</span><span class="v">Na + 2 × [(gluk mmol/l − 5,6) / 5,6]</span></div>
-              <div class="detail-box"><span class="k">Zmierzone Na</span><span class="v" id="nat-dni">140 mmol/l</span></div>
-              <div class="detail-box"><span class="k">Glikemia</span><span class="v" id="nat-dgi">100 mg/dl</span></div>
-              <div class="detail-box"><span class="k">Korekta</span><span class="v" id="nat-dci">+0.00 mmol/l</span></div>
+          <div class="row">
+            <label class="row-label" for="sod-g-in">Glikemia</label>
+            <div class="row-ctl">
+              <div class="field">
+                <input id="sod-g-in" type="text" inputmode="decimal" autocomplete="off">
+                <div class="seg" id="sod-g-seg">
+                  <button type="button" class="active" data-v="mgdl">mg/dl</button>
+                  <button type="button" data-v="mmol">mmol/l</button>
+                </div>
+              </div>
+              <div class="equiv" id="sod-g-eq"></div>
             </div>
-          </section>
+          </div>
         </div>
-      </section>
-      <div class="footer">Sód skorygowany w hiperglikemii / © MICHAA 2026</div>
-    </main>
-  </div>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    function clamp(v,a,b){return Math.min(b,Math.max(a,v));}
-    function dangle(val,ctr,mn,mx){return val>=ctr?((val-ctr)/(mx-ctr))*135:-(((ctr-val)/(ctr-mn))*135);}
-    function setDial(el,a){el.style.setProperty('--indicator-angle',a+'deg');}
-    function chips(wrap,fn){[...wrap.children].forEach(el=>el.classList.toggle('active',fn(el)));}
+</main>
 
-    function showPage(id){
-      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-      document.getElementById('page-'+id).classList.add('active');
-      document.body.className=['t-menu','t-bmi','t-ligno','t-gfr','t-dexdor','t-natremia'].reduce((c,t)=>c.replace(t,''),'t-menu t-bmi t-ligno t-gfr t-dexdor t-natremia').trim();
-      const m={menu:'t-menu',bmi:'t-bmi',ligno:'t-ligno',gfr:'t-gfr',dexdor:'t-dexdor',natremia:'t-natremia'};
-      document.body.className=m[id];
-      window.scrollTo(0,0);
+<footer class="foot in">© MICHAA 2026 - do celów naukowych, nie do użytku klinicznego</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const fmt = (n, d) => n.toFixed(d).replace('.', ',');
+const signed = (n, d) => {
+  const r = +n.toFixed(d);
+  return (r < 0 ? '-' : '+') + fmt(Math.abs(r), d);
+};
+const num = s => {
+  const t = s.trim().replace(',', '.');
+  return /^(\d+\.?\d*|\.\d+)$/.test(t) ? parseFloat(t) : NaN;
+};
+const lata = n => {
+  const d = n % 10, s = n % 100;
+  return d >= 2 && d <= 4 && (s < 12 || s > 14) ? 'lata' : 'lat';
+};
+const MASA = [50, 110];
+const MASA_TXT = MASA[0] + '-' + MASA[1] + ' kg';
+const pozaZakresem = w => w < MASA[0] || w > MASA[1];
+
+const SVG = 'http://www.w3.org/2000/svg';
+const punkt = (r, a) => {
+  const t = a * Math.PI / 180;
+  return (120 + r * Math.sin(t)).toFixed(2) + ' ' + (120 - r * Math.cos(t)).toFixed(2);
+};
+const luk = (r, a1, a2) => 'M' + punkt(r, a1) + 'A' + r + ' ' + r + ' 0 ' + (a2 - a1 > 180 ? 1 : 0) + ' 1 ' + punkt(r, a2);
+
+function add(parent, tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  parent.appendChild(e);
+  return e;
+}
+
+function rys(parent, tag, attrs) {
+  const e = document.createElementNS(SVG, tag);
+  Object.keys(attrs).forEach(k => e.setAttribute(k, attrs[k]));
+  parent.appendChild(e);
+  return e;
+}
+
+function makeDial(id, o) {
+  const card = $(id);
+  const dec = o.dec || 0;
+  const kat = v => (v - o.center) / (v >= o.center ? o.max - o.center : o.center - o.min) * 135;
+  let val = o.value;
+
+  const head = add(card, 'div', 'card-head');
+  add(head, 'span', 'card-title', o.title);
+  const note = o.masa ? add(head, 'span', 'card-note') : null;
+  const dial = add(card, 'div', 'dial');
+
+  const svg = rys(dial, 'svg', { viewBox: '0 0 240 240', 'aria-hidden': 'true' });
+  rys(svg, 'path', { class: 'g-track', d: luk(104, -135, 135) });
+  if (o.masa) rys(svg, 'path', { class: 'g-zone', d: luk(114, kat(MASA[0]), kat(MASA[1])) });
+  o.chips.forEach(c => rys(svg, 'path', { class: 'g-tick', d: 'M' + punkt(92, kat(c)) + 'L' + punkt(97, kat(c)) }));
+  const arc = rys(svg, 'path', { class: 'g-arc', d: luk(104, -135, 135), pathLength: 100 });
+  rys(rys(svg, 'g', { class: 'g-knob' }), 'circle', { cx: 120, cy: 16, r: 9 });
+  rys(svg, 'text', { class: 'g-lab', x: 64, y: 214 }).textContent = fmt(o.min, dec);
+  rys(svg, 'text', { class: 'g-lab', x: 176, y: 214 }).textContent = fmt(o.max, dec);
+
+  const minus = add(dial, 'button', 'step');
+  const mid = add(dial, 'div', 'dial-mid');
+  const out = add(mid, 'div', 'dial-val');
+  const unit = add(mid, 'div', 'dial-unit');
+  const plus = add(dial, 'button', 'step plus');
+  const range = add(card, 'input');
+  const box = add(card, 'div', o.cols === 4 ? 'chips c4' : 'chips');
+
+  minus.type = plus.type = 'button';
+  minus.setAttribute('aria-label', o.title + ' - mniej');
+  plus.setAttribute('aria-label', o.title + ' - więcej');
+  range.type = 'range';
+  range.min = o.min;
+  range.max = o.max;
+  range.step = o.step;
+  range.setAttribute('aria-label', o.title);
+
+  const chips = o.chips.map(c => {
+    const b = add(box, 'button', 'chip', o.chip(c));
+    b.type = 'button';
+    b.addEventListener('click', () => set(c));
+    return b;
+  });
+
+  function draw() {
+    const a = kat(val);
+    dial.style.setProperty('--a', a + 'deg');
+    arc.style.strokeDashoffset = 100 - (a + 135) / 270 * 100;
+    range.style.setProperty('--p', (val - o.min) / (o.max - o.min) * 100 + '%');
+    out.textContent = fmt(val, dec);
+    unit.textContent = o.unitOf ? o.unitOf(val) : o.unit;
+    minus.disabled = val <= o.min;
+    plus.disabled = val >= o.max;
+    chips.forEach((b, i) => b.classList.toggle('active', Math.abs(o.chips[i] - val) < o.step / 2));
+    if (note) {
+      const zle = pozaZakresem(val);
+      card.classList.toggle('warn', zle);
+      note.textContent = (zle ? 'poza zakresem ' : 'zakres ') + MASA_TXT;
     }
+  }
 
-    // BMI
-    let bmiH=1.70,bmiW=70;
-    (function(){
-      [1.5,1.6,1.7,1.8,1.9].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s.toFixed(1)+' m';b.onclick=()=>bmiSH(s);document.getElementById('bmi-qh').appendChild(b);});
-      [40,50,60,70,80,90,100,120,140].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s+' kg';b.onclick=()=>bmiSW(s);document.getElementById('bmi-qw').appendChild(b);});
-    })();
-    function bmiSH(v){bmiH=clamp(Math.round(v*100)/100,1.40,2.10);document.getElementById('bmi-hr').value=bmiH;bmiU();}
-    function bmiSW(v){bmiW=clamp(Math.round(v),30,180);document.getElementById('bmi-wr').value=bmiW;bmiU();}
-    function bmiU(){
-      bmiH=parseFloat(document.getElementById('bmi-hr').value);
-      bmiW=parseInt(document.getElementById('bmi-wr').value);
-      const b=bmiW/(bmiH*bmiH);
-      setDial(document.getElementById('bmi-hdial'),dangle(bmiH,1.7,1.40,2.10));
-      setDial(document.getElementById('bmi-wdial'),dangle(bmiW,70,30,180));
-      const cat=b<18.5?'Niedowaga':b<25?'Prawidłowe':b<30?'Nadwaga':'Otyłość';
-      document.getElementById('bmi-out').textContent=b.toFixed(2);
-      document.getElementById('bmi-cat').textContent=cat;
-      document.getElementById('bmi-hval').textContent=bmiH.toFixed(2);
-      document.getElementById('bmi-wval').textContent=bmiW;
-      document.getElementById('bmi-wi').textContent=bmiW+' kg';
-      document.getElementById('bmi-hi').textContent=bmiH.toFixed(2)+' m';
-      chips(document.getElementById('bmi-qh'),el=>Math.abs(parseFloat(el.textContent)-bmiH)<0.001);
-      chips(document.getElementById('bmi-qw'),el=>parseInt(el.textContent)===bmiW);
-    }
-    bmiU();
+  function set(v) {
+    val = +clamp(v, o.min, o.max).toFixed(dec);
+    range.value = val;
+    draw();
+    o.onChange();
+  }
 
-    // LIGNO
-    let ligW=70,ligD=1.0,ligC=10;
-    (function(){
-      [40,50,60,70,80,90,100,120,140].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s+' kg';b.onclick=()=>ligSW(s);document.getElementById('lig-qw').appendChild(b);});
-      [0.5,1,1.5,2,2.5,3].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=(s%1===0?s.toFixed(0):s.toFixed(1)).replace('.',',');b.onclick=()=>ligSD(s);document.getElementById('lig-qd').appendChild(b);});
-    })();
-    function ligSW(v){ligW=clamp(Math.round(v),30,180);document.getElementById('lig-wr').value=ligW;ligU();}
-    function ligSD(v){ligD=Math.round(clamp(v,0.5,3.0)*10)/10;document.getElementById('lig-dr').value=ligD.toFixed(1);ligU();}
-    function ligSC(v){ligC=v;document.getElementById('lig-c1').classList.toggle('active',v===10);document.getElementById('lig-c2').classList.toggle('active',v===20);ligU();}
-    function ligU(){
-      ligW=parseInt(document.getElementById('lig-wr').value);
-      ligD=parseFloat(document.getElementById('lig-dr').value);
-      setDial(document.getElementById('lig-wdial'),dangle(ligW,70,30,180));
-      setDial(document.getElementById('lig-ddial'),dangle(ligD,1.0,0.5,3.0));
-      const mg=ligW*ligD,r=mg/ligC;
-      document.getElementById('lig-out').textContent=r.toFixed(2);
-      document.getElementById('lig-wval').textContent=ligW;
-      document.getElementById('lig-dval').textContent=ligD.toFixed(1);
-      document.getElementById('lig-mph').textContent=mg.toFixed(1)+' mg/h';
-      const ct=ligC===10?'1% = 10 mg/ml':'2% = 20 mg/ml';
-      document.getElementById('lig-cl').textContent=ct;
-      document.getElementById('lig-ci').textContent=ct;
-      chips(document.getElementById('lig-qw'),el=>parseInt(el.textContent)===ligW);
-      chips(document.getElementById('lig-qd'),el=>Math.abs(parseFloat(el.textContent.replace(',','.'))-ligD)<0.001);
-    }
-    ligU();
+  minus.addEventListener('click', () => set(val - o.step));
+  plus.addEventListener('click', () => set(val + o.step));
+  range.addEventListener('input', () => set(parseFloat(range.value)));
 
-    // GFR
-    let gfrW=70,gfrA=40,gfrS='male',gfrU2='mgdl';
-    (function(){
-      [40,50,60,70,80,90,100,120,140].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s+' kg';b.onclick=()=>gfrSW(s);document.getElementById('gfr-qw').appendChild(b);});
-      [20,30,40,50,60,70,80,90].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s;b.onclick=()=>gfrSA(s);document.getElementById('gfr-qa').appendChild(b);});
-    })();
-    function gfrSW(v){gfrW=clamp(Math.round(v),30,180);document.getElementById('gfr-wr').value=gfrW;gfrU();}
-    function gfrSA(v){gfrA=clamp(Math.round(v),17,105);document.getElementById('gfr-ar').value=gfrA;gfrU();}
-    function gfrSS(v){gfrS=v;document.getElementById('gfr-m').classList.toggle('active',v==='male');document.getElementById('gfr-f').classList.toggle('active',v==='female');gfrU();}
-    function gfrSU(v){
-      if(gfrU2===v)return;
-      const cur=parseFloat(document.getElementById('gfr-cr').value)||0;
-      if(v==='umol'){document.getElementById('gfr-cr').value=(cur*88.4).toFixed(1);document.getElementById('gfr-cr').step='0.1';document.getElementById('gfr-ub').textContent='µmol/l';}
-      else{document.getElementById('gfr-cr').value=(cur/88.4).toFixed(2);document.getElementById('gfr-cr').step='0.01';document.getElementById('gfr-ub').textContent='mg/dl';}
-      gfrU2=v;
-      document.getElementById('gfr-mg').classList.toggle('active',v==='mgdl');
-      document.getElementById('gfr-um').classList.toggle('active',v==='umol');
-      gfrU();
-    }
-    function gfrU(){
-      gfrW=parseInt(document.getElementById('gfr-wr').value);
-      gfrA=parseInt(document.getElementById('gfr-ar').value);
-      const raw=parseFloat(document.getElementById('gfr-cr').value)||0;
-      const mg=gfrU2==='mgdl'?raw:raw/88.4;
-      const um=mg*88.4;
-      setDial(document.getElementById('gfr-wdial'),dangle(gfrW,70,30,180));
-      setDial(document.getElementById('gfr-adial'),dangle(gfrA,40,17,105));
-      let g=0;if(mg>0){g=((140-gfrA)*gfrW)/(72*mg);if(gfrS==='female')g*=0.85;}
-      document.getElementById('gfr-out').textContent=g.toFixed(2);
-      document.getElementById('gfr-cat').textContent=gfrS==='female'?'Cockcroft-Gault × 0.85':'Cockcroft-Gault';
-      document.getElementById('gfr-wval').textContent=gfrW;
-      document.getElementById('gfr-aval').textContent=gfrA;
-      document.getElementById('gfr-si').textContent=gfrS==='female'?'Kobieta × 0.85':'Mężczyzna × 1.00';
-      document.getElementById('gfr-cri').textContent=mg.toFixed(2)+' mg/dl';
-      document.getElementById('gfr-pi').textContent=gfrW+' kg / '+gfrA+' lat';
-      document.getElementById('gfr-mir').innerHTML=gfrU2==='mgdl'?'<strong>Odpowiednik:</strong> '+um.toFixed(1)+' µmol/l':'<strong>Odpowiednik:</strong> '+mg.toFixed(2)+' mg/dl';
-      chips(document.getElementById('gfr-qw'),el=>parseInt(el.textContent)===gfrW);
-      chips(document.getElementById('gfr-qa'),el=>parseInt(el.textContent)===gfrA);
-    }
-    gfrU();
+  range.value = val;
+  draw();
+  return { get value() { return val; } };
+}
 
-    // DEXDOR
-    let dexW=70,dexD=0.7,dexC=8;
-    (function(){
-      [0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s.toFixed(1);b.onclick=()=>dexSD(s);document.getElementById('dex-qd').appendChild(b);});
-      [30,50,70,90,110,130].forEach(s=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=s+' kg';b.onclick=()=>dexSW(s);document.getElementById('dex-qw').appendChild(b);});
-    })();
-    function dexSW(v){dexW=clamp(Math.round(v),20,200);document.getElementById('dex-wr').value=dexW;dexU();}
-    function dexSD(v){dexD=Math.round(clamp(v,0.2,1.4)*10)/10;document.getElementById('dex-dr').value=dexD.toFixed(1);dexU();}
-    function dexSC(v){dexC=v;document.getElementById('dex-c8').classList.toggle('active',v===8);document.getElementById('dex-c4').classList.toggle('active',v===4);dexU();}
-    function dexU(){
-      dexW=parseInt(document.getElementById('dex-wr').value);
-      dexD=parseFloat(document.getElementById('dex-dr').value);
-      setDial(document.getElementById('dex-wdial'),dangle(dexW,70,20,200));
-      setDial(document.getElementById('dex-ddial'),dangle(dexD,0.7,0.2,1.4));
-      const ug=dexW*dexD,r=ug/dexC;
-      document.getElementById('dex-out').textContent=r.toFixed(2);
-      document.getElementById('dex-wval').textContent=dexW;
-      document.getElementById('dex-dval').textContent=dexD.toFixed(1);
-      document.getElementById('dex-uph').textContent=ug.toFixed(1)+' µg/h';
-      document.getElementById('dex-cl').textContent=dexC+' µg/ml';
-      chips(document.getElementById('dex-qd'),el=>Math.abs(parseFloat(el.textContent)-dexD)<0.001);
-      chips(document.getElementById('dex-qw'),el=>parseInt(el.textContent)===dexW);
-    }
-    dexU();
+function makeSeg(id, onChange) {
+  const btns = Array.from($(id).children);
+  let v = btns.find(b => b.classList.contains('active')).dataset.v;
+  btns.forEach(b => {
+    b.setAttribute('aria-pressed', b.dataset.v === v);
+    b.addEventListener('click', () => {
+      if (b.dataset.v === v) return;
+      v = b.dataset.v;
+      btns.forEach(x => {
+        x.classList.toggle('active', x === b);
+        x.setAttribute('aria-pressed', x === b);
+      });
+      onChange(v);
+    });
+  });
+  return { get value() { return v; } };
+}
 
-    // NATREMIA
-    let natGU='mgdl';
-    function natSGU(v){
-      if(natGU===v)return;
-      const gi=document.getElementById('nat-gi');
-      const cur=parseFloat(gi.value)||0;
-      if(v==='mmol'){gi.value=(cur/18.02).toFixed(1);gi.step='0.1';}
-      else{gi.value=Math.round(cur*18.02);gi.step='1';}
-      natGU=v;
-      document.getElementById('nat-mgdl').classList.toggle('active',v==='mgdl');
-      document.getElementById('nat-mmol').classList.toggle('active',v==='mmol');
-      document.getElementById('nat-gsuffix').textContent=v==='mgdl'?'mg/dl':'mmol/l';
-      natU();
-    }
-    function natU(){
-      const na=parseFloat(document.getElementById('nat-ni').value)||0;
-      const g=parseFloat(document.getElementById('nat-gi').value)||0;
-      const gmm=natGU==='mgdl'?g/18.02:g;
-      const corr=2*((gmm-5.6)/5.6);
-      const res=na+corr;
-      document.getElementById('nat-out').textContent=isNaN(res)?'—':res.toFixed(2);
-      document.getElementById('nat-corr-lbl').textContent=(corr>=0?'korekta: +':'korekta: ')+corr.toFixed(2);
-      document.getElementById('nat-dni').textContent=na+' mmol/l';
-      document.getElementById('nat-dgi').textContent=natGU==='mgdl'?g.toFixed(0)+' mg/dl':g.toFixed(1)+' mmol/l';
-      document.getElementById('nat-dci').textContent=(corr>=0?'+':'')+corr.toFixed(2)+' mmol/l';
-      const mir=natGU==='mgdl'?'Odpowiednik: '+gmm.toFixed(2)+' mmol/l':'Odpowiednik: '+Math.round(g*18.02)+' mg/dl';
-      document.getElementById('nat-mir').textContent=mir;
-    }
-    natU();
-  </script>
+function makeUnitField(key, units, onChange) {
+  const input = $(key + '-in');
+  const keys = Object.keys(units);
+  let base = NaN;
+
+  const text = k => isNaN(base) ? '-' : fmt(base * units[k].k, units[k].dec) + ' ' + units[k].label;
+  const read = () => {
+    base = num(input.value) / units[seg.value].k;
+    input.parentNode.classList.toggle('bad', input.value.trim() !== '' && isNaN(base));
+  };
+  const seg = makeSeg(key + '-seg', k => {
+    input.value = isNaN(base) ? '' : fmt(base * units[k].k, units[k].dec);
+    onChange();
+  });
+  input.addEventListener('input', () => {
+    read();
+    onChange();
+  });
+  read();
+
+  return {
+    get base() { return base; },
+    shown: () => text(seg.value),
+    other: () => text(keys.find(k => k !== seg.value))
+  };
+}
+
+function ostrzezMase(key, w) {
+  const zle = pozaZakresem(w);
+  $(key + '-res').classList.toggle('warn', zle);
+  $(key + '-msg').textContent = zle
+    ? 'Masa ' + w + ' kg poza zakresem ' + MASA_TXT + ' - wartości mogą być nieprawidłowe.'
+    : 'Kalkulator przewidziany dla masy ciała ' + MASA_TXT + '.';
+}
+
+const kg = c => c + ' kg';
+const masy = [40, 50, 60, 70, 80, 90, 100, 120, 140];
+
+const bmiH = makeDial('bmi-h', { title: 'Wzrost', unit: 'm', min: 1.4, max: 2.1, step: 0.01, dec: 2, value: 1.7, center: 1.7, chips: [1.5, 1.6, 1.7, 1.8, 1.9], chip: c => fmt(c, 1) + ' m', onChange: bmi });
+const bmiW = makeDial('bmi-w', { title: 'Masa ciała', unit: 'kg', min: 30, max: 180, step: 1, value: 70, center: 70, chips: masy, chip: kg, onChange: bmi });
+const bmiKat = ['Niedowaga', 'Prawidłowe', 'Nadwaga', 'Otyłość'];
+
+function bmi() {
+  const b = bmiW.value / (bmiH.value * bmiH.value);
+  const k = b < 18.5 ? 0 : b < 25 ? 1 : b < 30 ? 2 : 3;
+  $('bmi-out').textContent = fmt(b, 2);
+  $('bmi-cat').textContent = bmiKat[k];
+  $('bmi-wi').textContent = bmiW.value + ' kg';
+  $('bmi-hi').textContent = fmt(bmiH.value, 2) + ' m';
+  $('bmi-mark').style.left = clamp((b - 15) / 25, 0, 1) * 100 + '%';
+  $('bmi-bar').querySelectorAll('i').forEach((s, i) => s.classList.toggle('on', i === k));
+}
+
+const lidC = makeSeg('lid-c', lid);
+const lidW = makeDial('lid-w', { title: 'Masa ciała', unit: 'kg', min: 30, max: 180, step: 1, value: 70, center: 70, chips: masy, chip: kg, masa: true, onChange: lid });
+const lidD = makeDial('lid-d', { title: 'Dawka', unit: 'mg/kg/h', min: 0.5, max: 3, step: 0.1, dec: 1, value: 1, center: 1, chips: [0.5, 1, 1.5, 2, 2.5, 3], chip: c => fmt(c, c % 1 ? 1 : 0), onChange: lid });
+
+function lid() {
+  const c = +lidC.value;
+  const mg10 = lidW.value * Math.round(lidD.value * 10);
+  const opis = c === 10 ? '1% = 10 mg/ml' : '2% = 20 mg/ml';
+  $('lid-out').textContent = fmt(mg10 / (10 * c), 2);
+  $('lid-mph').textContent = fmt(mg10 / 10, 1) + ' mg/h';
+  $('lid-cl').textContent = opis;
+  $('lid-ci').textContent = opis;
+  ostrzezMase('lid', lidW.value);
+}
+
+const gfrSex = makeSeg('gfr-sex', gfr);
+const gfrCr = makeUnitField('gfr-cr', { mgdl: { label: 'mg/dl', k: 1, dec: 2 }, umol: { label: 'µmol/l', k: 88.4, dec: 1 } }, gfr);
+const gfrW = makeDial('gfr-w', { title: 'Masa ciała', unit: 'kg', min: 30, max: 180, step: 1, value: 70, center: 70, chips: masy, chip: kg, onChange: gfr });
+const gfrA = makeDial('gfr-a', { title: 'Wiek', unit: 'lat', unitOf: lata, min: 17, max: 105, step: 1, value: 40, center: 40, chips: [20, 30, 40, 50, 60, 70, 80, 90], chip: String, onChange: gfr });
+
+function gfr() {
+  const cr = gfrCr.base;
+  const ok = cr > 0;
+  const kobieta = gfrSex.value === 'k';
+  const wynik = (140 - gfrA.value) * gfrW.value / (72 * cr) * (kobieta ? 0.85 : 1);
+  $('gfr-res').classList.toggle('idle', !ok);
+  $('gfr-out').textContent = ok ? fmt(wynik, 2) : '-';
+  $('gfr-cat').textContent = !ok ? 'wpisz stężenie kreatyniny' : kobieta ? 'Cockcroft-Gault × 0,85' : 'Cockcroft-Gault';
+  $('gfr-si').textContent = kobieta ? 'Kobieta × 0,85' : 'Mężczyzna × 1,00';
+  $('gfr-cri').textContent = ok ? fmt(cr, 2) + ' mg/dl' : '-';
+  $('gfr-pi').textContent = gfrW.value + ' kg / ' + gfrA.value + ' ' + lata(gfrA.value);
+  $('gfr-cr-eq').textContent = 'Odpowiednik: ' + gfrCr.other();
+}
+
+const dexC = makeSeg('dex-c', dex);
+const dexW = makeDial('dex-w', { title: 'Masa pacjenta', unit: 'kg', min: 20, max: 200, step: 1, value: 70, center: 70, chips: [30, 50, 70, 90, 110, 130], chip: kg, masa: true, onChange: dex });
+const dexD = makeDial('dex-d', { title: 'Dawka', unit: 'µg/kg/h', min: 0.2, max: 1.4, step: 0.1, dec: 1, value: 0.7, center: 0.7, cols: 4, chips: Array.from({ length: 13 }, (x, i) => (i + 2) / 10), chip: c => fmt(c, 1), onChange: dex });
+
+function dex() {
+  const c = +dexC.value;
+  const ug10 = dexW.value * Math.round(dexD.value * 10);
+  $('dex-out').textContent = fmt(ug10 / (10 * c), 2);
+  $('dex-uph').textContent = fmt(ug10 / 10, 1) + ' µg/h';
+  $('dex-cl').textContent = c + ' µg/ml';
+  ostrzezMase('dex', dexW.value);
+}
+
+const sodNa = $('sod-na');
+const sodG = makeUnitField('sod-g', { mgdl: { label: 'mg/dl', k: 1, dec: 0 }, mmol: { label: 'mmol/l', k: 1 / 18.02, dec: 2 } }, sod);
+sodNa.addEventListener('input', sod);
+
+function sod() {
+  const na = num(sodNa.value);
+  const g = sodG.base / 18.02;
+  const korekta = 2 * (g - 5.6) / 5.6;
+  const jestG = g > 0;
+  const jestNa = na > 0;
+  sodNa.parentNode.classList.toggle('bad', sodNa.value.trim() !== '' && !jestNa);
+  $('sod-res').classList.toggle('idle', !(jestG && jestNa));
+  $('sod-out').textContent = jestG && jestNa ? fmt(na + korekta, 2) : '-';
+  $('sod-corr').textContent = jestG ? 'korekta: ' + signed(korekta, 2) : 'wpisz stężenie Na i glikemię';
+  $('sod-dna').textContent = jestNa ? String(na).replace('.', ',') + ' mmol/l' : '-';
+  $('sod-dg').textContent = jestG ? sodG.shown() : '-';
+  $('sod-dc').textContent = jestG ? signed(korekta, 2) + ' mmol/l' : '-';
+  $('sod-g-eq').textContent = 'Odpowiednik: ' + (jestG ? sodG.other() : '-');
+}
+
+bmi();
+lid();
+gfr();
+dex();
+sod();
+
+const STRONY = ['bmi', 'lidokaina', 'gfr', 'dexdor', 'sod'];
+const back = $('back');
+let zMenu = false;
+
+function route() {
+  const h = location.hash.slice(1);
+  const cur = STRONY.includes(h) ? h : 'menu';
+  document.querySelectorAll('.page').forEach(p => { p.hidden = p.id !== 'page-' + cur; });
+  back.hidden = cur === 'menu';
+  document.body.classList.toggle('menu', cur === 'menu');
+  if (cur === 'menu') zMenu = false;
+  document.title = cur === 'menu' ? 'Kalkulatory' : $('page-' + cur).querySelector('h1').textContent + ' - Kalkulatory';
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.tile').forEach(a => a.addEventListener('click', () => { zMenu = true; }));
+back.addEventListener('click', () => {
+  if (zMenu) {
+    history.back();
+    return;
+  }
+  history.replaceState(null, '', location.pathname + location.search);
+  route();
+});
+window.addEventListener('hashchange', route);
+route();
+</script>
 </body>
 </html>
